@@ -1191,6 +1191,27 @@ function drawBooth() {
   drawHint();
 }
 
+// 检查模式里要画虚线框的地方。证件上一行一行的文字栏一看就能点，不画；
+// 照片、价签、锦旗、早安图这类「图」由证件类的 spots 列出来；被别的证件盖住的不画
+function inspectSpots() {
+  const e = B.ent, out = windowSpots(e).map((s) => ({ key: s.key, box: s.box }));
+  if (B.xray.on && e && e.spec.xray && entrantX(e) !== null) {
+    for (const it of e.spec.xray) out.push({ key: it.key, box: xrayItemBox(e, it) });
+  }
+  if (B.ban) return out;
+  const top = (x, y) => [...B.docs].reverse().find((q) => q.big && inBox(x, y, docBox(q)));
+  for (const d of B.docs) {
+    if (!d.big || !d.doc.spots) continue;
+    for (const name of d.doc.spots) {
+      const f = d.doc.fields[name];
+      if (!f) continue;
+      const box = [d.x + f[0], d.y + f[1], d.x + f[2], d.y + f[3]];
+      if (top((box[0] + box[2]) >> 1, (box[1] + box[3]) >> 1) === d) out.push({ key: `${d.key}.${name}`, box });
+    }
+  }
+  return out;
+}
+
 function composeInspect(g) {
   const I = B.insp;
   g.fillStyle = 'rgba(26,10,10,0.55)'; g.fillRect(0, 0, W, H);
@@ -1206,12 +1227,15 @@ function composeInspect(g) {
   const boxes = I.sel.map((s) => s.box()).filter((b) => b[2] > b[0]);
   for (const b of boxes) g.drawImage(F, b[0], b[1], b[2] - b[0] + 1, b[3] - b[1] + 1, b[0], b[1], b[2] - b[0] + 1, b[3] - b[1] + 1);
   setCtx(g);
-  // 窗口里能点的地方：虚线框提示
-  for (const s of windowSpots(B.ent)) if (!I.sel.some((q) => q.key === s.key)) {
-    G.fillStyle = 'rgba(232,156,116,0.7)';
-    const [a0, b0, a1, b1] = s.box;
-    for (let xx = a0; xx <= a1; xx += 4) { G.fillRect(xx, b0, 2, 1); G.fillRect(xx, b1, 2, 1); }
-    for (let yy = b0; yy <= b1; yy += 4) { G.fillRect(a0, yy, 1, 2); G.fillRect(a1, yy, 1, 2); }
+  // 看不出能点的地方：虚线框提示（窗口里的旅客、证件上的照片 / 价签 / 锦旗 / 早安图、X 光照出来的东西）
+  // 框往外扩 2 像素（别压在照片自己的边框上），虚线缓慢流动（蚂蚁线），一眼能看到
+  const ph = Math.floor(now * 6) % 5;
+  G.fillStyle = K.CLAUDE;
+  for (const s of inspectSpots()) if (!I.sel.some((q) => q.key === s.key)) for (const pad of [2, 3]) {   // 两圈 = 2 像素粗
+    const [a0, b0, a1, b1] = [s.box[0] - pad, s.box[1] - pad, s.box[2] + pad, s.box[3] + pad];
+    const w = a1 - a0, h = b1 - b0, per = 2 * (w + h);
+    const at = (t) => (t < w ? [a0 + t, b0] : t < w + h ? [a1, b0 + t - w] : t < 2 * w + h ? [a1 - (t - w - h), b1] : [a0, b1 - (t - 2 * w - h)]);
+    for (let t = ph; t < per; t += 5) for (let k = 0; k < 3; k++) { const [px, py] = at((t + k) % per); G.fillRect(px, py, 1, 1); }
   }
   if (boxes.length >= 2 && I.banner && I.banner.bad) {
     const p = edgePoint(boxes[0], center(boxes[1])), q = edgePoint(boxes[1], center(boxes[0]));

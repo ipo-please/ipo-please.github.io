@@ -12,6 +12,7 @@ class Passport {
     this.fields = { header: [3, 3, 172, 16], name: [56, 20, 172, 34], photo: [9, 22, 50, 73] };
     rows.forEach(([k], i) => { this.fields[k] = [56, 40 + i * 12, 150, 51 + i * 12]; });
     if (sticker) this.fields.sticker = [122, 84, 172, 108];
+    this.spots = sticker ? ['photo', 'sticker'] : ['photo'];   // 检查模式里画虚线框（照片、价签看不出能点）
   }
 
   draw(x, y) {
@@ -142,6 +143,7 @@ class MorningCard {
     this.w = 156; this.h = 112;
     this.icon = ['card', [236, 170, 196]];
     this.fields = { image: [0, 0, 155, 111] };
+    this.spots = ['image'];
   }
 
   draw(x, y) { docShadow(x, y, this.w, this.h); spr('morning', x, y); }
@@ -154,6 +156,7 @@ class JinqiDoc {
     this.w = s[2] * 2; this.h = s[3] * 2;
     this.icon = ['card', [178, 28, 28]];
     this.fields = { 上款: [36, 12, 92, 32], 正文: [68, 32, 96, 118], 下款: [22, 36, 64, 124] };
+    this.spots = ['上款', '正文', '下款'];
   }
 
   draw(x, y) {
