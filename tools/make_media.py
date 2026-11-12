@@ -2,7 +2,7 @@
 
 先录帧（见 tools/record_gif.js），再：
   .venv/bin/python tools/make_media.py <中文帧目录> <英文帧目录>
-og.png 的右半边是中文帧里 Max 哥「那我的钱呢？！」那一帧的检查窗口（第 OG_FRAME 帧）。
+og.png 的右半边是中文录制时另存的 still.png（Max 哥「那我的钱呢？！」）里的检查窗口。
 """
 import subprocess
 import sys
@@ -17,7 +17,7 @@ from pp.screens import TITLE_BAND, TITLE_BAND_D, TITLE_EDGE, TITLE_GOLD, title_b
 
 MEDIA = ROOT / "media"
 BG = (26, 23, 23)
-OG_FRAME = 251
+FPS = 15                     # 和 record_gif.js 一致
 
 
 def emblem(d, cx, cy, r):
@@ -61,9 +61,9 @@ def og(frame):
 
 
 def gif(frames, out):
-    """10fps、1280×720；像素画不抖动，调色板按帧间变化统计，体积小。"""
+    """15fps、1280×720；像素画不抖动，调色板按帧间变化统计，体积小。"""
     pal = out.with_suffix(".pal.png")
-    src = ["-framerate", "10", "-start_number", "0", "-i", str(Path(frames) / "f%04d.png")]
+    src = ["-framerate", str(FPS), "-start_number", "0", "-i", str(Path(frames) / "f%04d.png")]
     subprocess.run(["ffmpeg", "-v", "error", "-y", *src, "-vf", "palettegen=max_colors=96:stats_mode=diff", str(pal)], check=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", *src, "-i", str(pal), "-lavfi",
                     "[0:v][1:v]paletteuse=dither=none:diff_mode=rectangle", "-loop", "0", str(out)], check=True)
@@ -75,7 +75,7 @@ def main():
     zh, en = sys.argv[1], sys.argv[2]
     MEDIA.mkdir(exist_ok=True)
     logo()
-    og(Path(zh) / f"f{OG_FRAME:04d}.png")
+    og(Path(zh) / "still.png")
     gif(zh, MEDIA / "gameplay-zh.gif")
     gif(en, MEDIA / "gameplay-en.gif")
 
