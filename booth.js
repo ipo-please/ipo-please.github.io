@@ -1140,10 +1140,15 @@ function hintText() {
 function drawHint() {
   const s = hintText();
   if (!s || B.insp.on || (B.ban && !(B.flash && now < B.flash.t + 3.2))) return;
-  const size = tw(s, 10) > 396 ? 8 : 10;
-  // 英文太长：小字折成两行
-  const lines = size === 8 && tw(s, 8) > 400 ? wrap(s, 8, 400) : [tr(s)];
-  const w = Math.max(...lines.map((l) => rawTw(l, size))) + 12, h = lines.length > 1 ? 24 : 15;
+  // 刚打印出来、还停在出纸口的单子（小票、定位、企查）别压住：提示栏让到它右边
+  let left = DESK[0] + 4;
+  for (const d of B.docs) if (d.big && d.x === PRINT_X && d.y === 131) left = Math.max(left, PRINT_X + d.doc.w + 6);
+  if (B.printing) left = Math.max(left, PRINT_X + B.printing.doc.w + 6);
+  const room = W - 6 - left - 12;
+  const size = tw(s, 10) > Math.min(396, room) ? 8 : 10;
+  // 英文太长：小字折行
+  const lines = size === 8 && tw(s, 8) > Math.min(400, room) ? wrap(s, 8, Math.min(400, room)) : [tr(s)];
+  const w = Math.max(...lines.map((l) => rawTw(l, size))) + 12, h = lines.length > 1 ? 4 + lines.length * 10 : 15;
   const x = Math.max(DESK[0] + 4, W - 6 - w), y = 134;
   rect(x, y, x + w, y + h, 'rgba(22,19,19,0.92)');
   outline(x, y, x + w, y + h, K.CLAUDE);

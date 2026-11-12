@@ -1,13 +1,32 @@
-# IPO, PLEASE · 请出示资金证明
+<p align="center">
+  <a href="https://ipo-please.github.io"><img src="media/logo.png" width="160" alt="IPO, PLEASE"></a>
+</p>
 
-**▶ 在线玩：[ipo-please.github.io](https://ipo-please.github.io/)** · 没玩过前作的先玩 [《IP, PLEASE》](https://ip-please.github.io/)（[仓库](https://github.com/ip-please/ip-please.github.io)）· [B 站主页](https://space.bilibili.com/3707008398134122)
+<h1 align="center">IPO, PLEASE · 请出示资金证明</h1>
 
-《IP, PLEASE》的续作，Papers, Please 画风的网页像素小游戏。剧情和 B 站同名视频一致（视频工程不在这个仓库）。
+<p align="center">
+  <b>简体中文</b> · <a href="README.en.md">English</a>
+</p>
 
-安索兹卡上市了，封号即营收。你还是东八区检查站的审查员 Claude：旧规一条不少，新规每天加一条。
+<p align="center">
+  《IP, PLEASE》的续作，Papers, Please 画风的像素小游戏。<br>
+  安索兹卡上市了，封号即营收。你还是东八区检查站的审查员 Claude：旧规一条不少，新规每天加一条。
+</p>
 
-- 5 天剧情 + 结局，全程约 25 分钟，每天下班自动存档
-- 中文 / English：开机画面选语言（同原作，选的时候会看一眼你设备的时区开个玩笑）
+<p align="center">
+  <a href="https://ipo-please.github.io"><b>▶ 在线玩：ipo-please.github.io</b></a><br>
+  没玩过前作的，先玩 <a href="https://ip-please.github.io/">《IP, PLEASE》</a>（<a href="https://github.com/ip-please/ip-please.github.io">仓库</a>）· <a href="https://space.bilibili.com/3707008398134122">B 站主页</a>
+</p>
+
+<p align="center">
+  <img src="media/gameplay-zh.gif" width="640" alt="游戏画面：Max 哥先付了 2400 美元年费，检查发现护照是美国、手机号却是 +86；盖上拒绝章，ANT 股价涨 7%，他问“那我的钱呢？！”，Claude 答“收入已确认。”">
+  <br>
+  <sub>Day 2：“请先付款。”</sub>
+</p>
+
+- 5 天剧情 + 结局，全程约 25 分钟，每天下班自动存档；剧情和 B 站同名视频一致
+- 中文 / English：开机画面选语言（同前作，选的时候会看一眼你设备的时区开个玩笑）
+- 手机横屏用手指、电脑用鼠标拖证件
 - 纯静态网页，不加载任何外部资源，下载后直接双击 `index.html` 也能玩
 - 标题页右下角是前作、GitHub、B 站的传送门（片尾只留 GitHub 和 B 站）；前作的标题页和片尾也指回这里
 - 预览：网址后面加 `#end` 直接看片尾，`#title` 直接看标题页
@@ -30,17 +49,6 @@ python3 -m http.server 8952      # 仓库根目录，然后打开 http://localho
 | 4 | 11.12 | 新版宪法：§8 总部 · §9 股东 · §10 AI 不得拘留 · §11 封号清单（以前封的也算）；企查 | 大肥鱼（你不能拘留我了）、John（两万亿）、东京润哥、德州人、戴眼罩的乔治 |
 | 5 | 11.13 | 换号：被封的人伪装回来 | 套头套的鲸鱼娘、乔治终版、作者（§13）、结局 |
 
-和视频不同的地方（游戏性）：
-
-- 快剪（老面孔、新加坡同胞、鱼灾）做成限时按键：说中国梗的拒绝、说人话的准予；鱼拘留、人放行。
-- 封号清单收的是你自己拒绝 / 拘留过的人。随机路人被拒以后，Day 4–5 会换个名字回来，要翻清单比对照片。
-- 锦旗大叔递一本护照和一面锦旗，破绽在锦旗下款「美国东八区用户」。
-- 拼车一家在游戏里要拒绝（旧规 §4 禁止拼车），小票改成「实际可用：0 天」。
-- 伪装成功的认不出来：乔治的眼罩、大鼻子眼镜，鲸鱼娘的头套，拿脸和封号清单比对都是「不是同一个人」。Day 4 的乔治靠企查抓，Day 5 的鲸鱼娘只能点尾巴；乔治终版查不出问题，放行后进中文聊天的结局（同视频）。
-- 「不得虐待 Claude」除了视频里的两个，Day 2–3 的随机路人还会从词池里抽；正常抱怨不算，拘留了会被开警告单。虐待的那句话在检查模式里能点，出警告、能询问。
-- 测谎题换成了新的热梗（芜湖、你干嘛、遥遥领先、哈基米、遇事不决、我命由我），上一期用过的不再用。
-- 下班结算：岳母每天把封号分成花光（1M 上下文 → 双十一内存条 → ANT），Day 5 公司退市，全归零。
-
 ## 目录
 
 | 路径 | 内容 |
@@ -57,7 +65,8 @@ python3 -m http.server 8952      # 仓库根目录，然后打开 http://localho
 | `i18n.js` | 语言：选语言画面、T() 查表；英文模式下 gfx.js 画字前自动查表 |
 | `en.js` | 英文译文（键是中文原句）、原样保留的中文（露馅的那句）、每天报纸的译注 |
 | `assets.js` | 预渲染的人物、背景、字形图集（由 `tools/build_assets.py` 生成，不要手改） |
-| `tools/` | `pp/` 是像素画法（和视频共用），`build_assets.py` 生成素材（英文版的招牌、印章、报纸配图另出 `:en`），`playtest.js` 自动试玩，`check_en.js` 查英文缺哪些译文 |
+| `tools/` | `pp/` 是像素画法（和视频共用），`build_assets.py` 生成素材（英文版的招牌、印章、报纸配图另出 `:en`），`playtest.js` 自动试玩，`check_en.js` 查英文缺哪些译文，`audit_en.js` 查英文界面有没有字出界，`record_gif.js` + `make_media.py` 生成 `media/` |
+| `media/` | README 用的 logo、游戏动图，以及链接分享卡片 `og.png` |
 
 ## 英文版
 
@@ -87,6 +96,14 @@ PW_CORE=<playwright-core 路径> node tools/playtest.js <截图目录>
 ```
 
 `LANG_PICK=en` 玩英文版；`DAYS=2` 只玩前两天；`SEED=777` 换一批随机路人；`MISTAKES=d1-1-JOHN,jorji-deny` 故意判错几个人，看警告单和另一条分支。
+
+## README 动图
+
+```bash
+LANG_PICK=zh PW_CORE=<playwright-core 路径> node tools/record_gif.js /tmp/gif-zh
+LANG_PICK=en PW_CORE=<playwright-core 路径> node tools/record_gif.js /tmp/gif-en
+.venv/bin/python tools/make_media.py /tmp/gif-zh /tmp/gif-en      # → media/
+```
 
 ## 致谢与许可
 
