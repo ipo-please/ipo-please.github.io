@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+# 只放游戏本体：视频工程、旧原型、剧本大纲、本地 Python 环境都不入库
+/video/
+/archive/
+/大纲.md
+/.venv/
