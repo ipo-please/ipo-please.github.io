@@ -163,7 +163,6 @@ const EN = {
   "新：『企查』查 Ta 的公司": "New: [LOOKUP] their company",
   "新：『封号清单』翻开比对照片": "New: open the [BAN LIST] and compare photos",
   "『企查』：查查安索兹卡自己": "[LOOKUP]: look up Anthrotzka itself",
-  "检查模式：点『东八区散户』": "CHECK mode: click \"UTC+8 retail\"",
   "这位的破绽在后台进程：按右下闪的『X光』扫一下": "This one's tell is in the background processes: press the blinking [X-RAY]",
   "虐待 Claude：按柜台上的『拘留』": "Abusing Claude: press [DETAIN] on the counter",
   "先在这本证件上盖章（右侧拉出印章栏），再还给旅客": "Stamp this one first (pull out the stamps on the right), then return it",

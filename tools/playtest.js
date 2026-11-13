@@ -171,10 +171,12 @@ const INIT = `(() => {
       return;
     }
     if (info.ending) {
-      if (info.banned) { await click(...center(BTN.BAN_BTN)); await tick(0.4); await inspect(name, ['win.face', `ban:${info.who}`], true); await idle(); await click(...center(BTN.BAN_BTN)); }
-      await idle(); await tick(2);
-      await click(...center(BTN.LOOKUP_BTN)); await waitFor(() => !B.printing, 5); await tick(0.5);
-      await inspect(name, ['lk.东八区散户'], false);
+      // John：随便操作他都不走（盖拒绝章、还护照 → 弹回桌上），太久没点『企查』会提醒；点『企查』自动进结局
+      await idle(); await tick(0.5);
+      await stampAndReturn('deny', name);
+      await tick(1);
+      log(`\n[${name}] 盖章还护照后：`, await ev(() => [B.ent && B.ent.phase, B.lines.slice(-2).map((l) => l.text), B.flash && B.flash.text]));
+      await click(...center(BTN.LOOKUP_BTN)); await waitFor(() => !B.printing, 5); await tick(1); await shot(`${name}-lookup`);
       await tick(7); await shot(`${name}-blocked`);
       await tick(2.5); await shot(`${name}-blackout`);
       await tick(2.2); await shot(`${name}-collapse`);

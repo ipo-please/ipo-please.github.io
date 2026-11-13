@@ -61,6 +61,7 @@ function startDay() {
     ban: null, blockedT: -9, limit: null, collapse: null, returned: new Set(), notice: { t0: now, lines: DAY_NOTICE[day] || [] },
   };
   B.queue = buildQueue(day);
+  if (location.hash === '#john' && day === LAST_DAY) B.idx = B.queue.length - 1;   // 预览：直接叫到 John
 }
 
 function later(dt, fn) { B.timers.push({ t: now + dt, fn }); }
@@ -220,7 +221,8 @@ function handDocs(e) {
       runSteps(ab.lines.concat([{ fx: 'abused' }]));
     });
   }
-  if (spec.ending) later(Math.max(t, 0) + 9, () => johnEndingHint(e));
+  // 最后的 John：玩家随便操作，他都不走；太久没点『企查』，他就提醒一句、『企查』开始闪
+  if (spec.ending) later(Math.max(t, 0) + JOHN_HINT_AFTER, () => johnEndingHint(e));
 }
 
 const decisionOf = (inst) => (inst.marks.length ? inst.marks[inst.marks.length - 1].kind : null);
@@ -450,14 +452,30 @@ function trayU() {
   return open ? easeOut(seg(now, t, t + 0.3)) : 1 - smooth(seg(now, t, t + 0.25));
 }
 function trayX() { return Math.round(lerp(W, TRAY_X, trayU())); }
+// 额度用完、作者：这两位不能直接盖章，先演剧情
+function gateTray() {
+  const e = B.ent;
+  if (!e || !e.handed || e.phase !== 'here') return false;
+  if (e.spec.limit && !e.limitDone) { usageLimit(e); return true; }
+  if (e.spec.then === 'author' && !e.authorDone) { authorTakeover(e); return true; }
+  return false;
+}
+
+// John 站在窗口前（递完护照）
+const johnHere = () => !!B.ent && !!B.ent.spec.ending && B.ent.handed && B.ent.phase === 'here';
+const JOHN_HINT_AFTER = 20;   // 递完护照多少秒还没点『企查』，就提醒
+
+// 想把护照还给 John：他不走，护照弹回桌上
+function johnRefuse(e) {
+  if (!e.endHinted) johnEndingHint(e);
+  else say('E', '我不入境。');
+  flash('先查查他说的“股东”：桌上的『企查』');
+}
+
 function setTray(open) {
   if (B.tray.open === open) return;
   const e = B.ent;
-  if (open && e && e.handed && e.phase === 'here') {
-    if (e.spec.limit && !e.limitDone) { usageLimit(e); return; }
-    if (e.spec.then === 'author' && !e.authorDone) { authorTakeover(e); return; }
-    if (e.spec.ending) { johnEndingHint(e); flash('先查查他说的“股东”：桌上的『企查』'); return; }
-  }
+  if (open && gateTray()) return;
   B.tray = { open, t: now };
   SFX.play(open ? 'tray' : 'tray_back');
   if (open) S.tut.tray = true;
@@ -469,6 +487,7 @@ function stampBtnBox(kind, tx) {
 }
 
 function stamp(kind) {
+  if (gateTray()) { setTray(false); return; }
   B.presses.push({ t: now, kind });
   SFX.play('stamp_' + kind, 1, 0.03);
   B.shake = now + 0.05;
@@ -600,7 +619,17 @@ function lookup() {
   const vx = Math.min(80, 18 + Math.max(...L.rows.map(([k]) => tw(k, 10))));
   const card = new Card(L.rows, { title: L.title, sub: L.sub || '§9', color: [214, 226, 214], colorD: [170, 190, 170], seal: false, valueX: Math.max(38, vx) });
   printDoc(card, 0.7, 'lk', e);
-  if (e.spec.ending && !e.endHinted) later(0.8, () => johnEndingHint(e));
+  if (e.spec.ending) {
+    e.endHinted = true;
+    later(0.7 + 1.8, () => {
+      if (B.ent !== e || B.endingSeq) return;
+      if (B.insp.on) setInspect(false);
+      if (B.xray.on) setXray(false);
+      if (B.tray.open) setTray(false);
+      B.ban = null;
+      startEnding(e);
+    });
+  }
 }
 
 // ———————————————————— 检查模式 ————————————————————
@@ -1085,7 +1114,7 @@ function drawButtons() {
   button(XRAY_BTN, 'X', 'X光', B.xray.on || xrayHot);
   if (S.day >= 3) button(LOCATE_BTN, 'GPS', '定位', needsGPS(B.ent) && !B.ent.located && !S.tut.gpsFound && B.ent.handed && Math.floor(now * 3) % 2 === 0);
   if (S.day >= 4) {
-    const hot = B.ent && B.ent.spec.ending && B.ent.endHinted && !B.ent.looked && Math.floor(now * 3) % 2 === 0;
+    const hot = johnHere() && B.ent.endHinted && !B.ent.looked && Math.floor(now * 3) % 2 === 0;
     button(LOOKUP_BTN, '企', '企查', hot);
     const [x0, y0, x1, y1] = BAN_BTN;
     const col = B.ban ? 'rgb(150,52,46)' : 'rgb(112,38,34)';
@@ -1120,6 +1149,7 @@ function hintText() {
   const e = B.ent, here = e && e.phase === 'here' && e.handed && !B.event, t = S.tut;
   if (!t.called) return S.day === 1 ? '点左下角闪烁的喇叭，叫下一位' : '';
   if (!here) return '';
+  if (e.spec.ending && (e.endHinted || e.looked)) return e.looked ? '' : '『企查』：查查安索兹卡自己';
   const onDesk = B.docs.some((d) => d.owner === 'ent' && d.big);
   if (!t.dragged && !onDesk) return '把柜台上的证件（左下小图标）拖到右边桌上';
   if (!t.rules) return '点右下角的『宪法』：本周新规从第 3 页起';
@@ -1130,8 +1160,6 @@ function hintText() {
   if (needsGPS(e) && !e.located && !t.gpsFound) return '这位要查『定位』：IP 在美国，人不一定在。按桌上闪的『GPS』';
   if (S.day >= 4 && !t.lookup && e.spec.lookup) return '新：『企查』查 Ta 的公司';
   if (S.day >= 4 && !t.ban) return '新：『封号清单』翻开比对照片';
-  if (e.spec.ending && e.endHinted && !e.looked) return '『企查』：查查安索兹卡自己';
-  if (e.spec.ending && e.looked) return '检查模式：点『东八区散户』';
   if (needsXray(e)) return '这位的破绽在后台进程：按右下闪的『X光』扫一下';
   if (e.abused && S.day <= 3 && !t.detain) return '虐待 Claude：按柜台上的『拘留』';
   return '';

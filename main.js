@@ -136,6 +136,7 @@ function dragEnd(x, y) {
     return;
   }
   if (!prev.big) { bounce(); return; }   // 从柜台拿起又放回柜台：原样不动
+  if (e.spec.ending && d.key === e.spec.primary) { bounce(); johnRefuse(e); return; }   // John 不走
   B.docs = B.docs.filter((o) => o !== d);
   d.returned = true;
   SFX.paper(7);
@@ -248,9 +249,14 @@ function boot() {
   newGame();
   loadImages().then(() => {
     sceneT0 = performance.now() / 1000;
-    // 预览：网址后面加 #end 直接看片尾，#title 直接看标题页（跳过选语言，用上次选的语言）
+    // 预览：网址后面加 #end 直接看片尾，#title 直接看标题页（跳过选语言，用上次选的语言），#john 直接玩 Day 5 的 John
     const jump = location.hash.slice(1);
     if (jump === 'end' || jump === 'title') go(jump);
+    if (jump === 'john') {
+      S.day = LAST_DAY;
+      for (const k of ['called', 'dragged', 'rules', 'tray', 'stamped', 'returned', 'inspect', 'locate', 'gpsFound', 'lookup', 'ban', 'xray', 'xrayFound', 'detain', 'quiz', 'tell']) S.tut[k] = true;   // 新手教学都算学过了
+      go('daycard');
+    }
     requestAnimationFrame(loop);
   });
 }

@@ -321,7 +321,7 @@ function summaryClick(x, y) {
   if (!inBox(x, y, CONTINUE_BTN)) return;
   SFX.play('click');
   const bal = sumBalance();
-  if (SUM.final) { S.savings = bal; clearSave(); go('end'); return; }
+  if (SUM.final || S.day >= LAST_DAY) { S.savings = bal; clearSave(); go('end'); return; }
   S.family = familyAfter();
   S.savings = bal;
   if (bal < 0) { clearSave(); go('over'); return; }
